@@ -27,7 +27,8 @@ The goal of predictp is to predict harbour porpoise detection probability from a
 You can install the development version of predictp like so:
 
 ``` r
-# FILL THIS IN! HOW CAN PEOPLE INSTALL YOUR DEV PACKAGE?
+require(devtools)
+install_github("david-borchers/predictp", build_vignettes = TRUE)
 ```
 
 ## Example

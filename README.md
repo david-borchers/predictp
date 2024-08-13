@@ -21,7 +21,8 @@ proportion of time porpoise spend at each depth.
 You can install the development version of predictp like so:
 
 ``` r
-# FILL THIS IN! HOW CAN PEOPLE INSTALL YOUR DEV PACKAGE?
+require(devtools)
+install_github("david-borchers/predictp", build_vignettes = TRUE)
 ```
 
 ## Example
