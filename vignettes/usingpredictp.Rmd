@@ -1,0 +1,154 @@
+---
+title: "Using predictp"
+author: "David Borchers"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Using predictp}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Overview
+
+This package combines estimates of detection probability given depth (obtained from an at-sea aerial survey experiment) and estimates of the proportion of time that animals spend at each depth (obtained from ARGOS tags and V-tags), to predict the probability of detecting an animal when we don't know its depth. 
+
+We refer to the model for detection probability given depth as the "visibility model" and the model for proportion of time at depths as the "tag model". 
+
+(To cut to the chase, jump to the section **How to Predict Detection Probability** below.)
+
+### The Visibility Model
+
+Detection probability given depth is modelled as a function of the variables below. The model itself is a GAM and the list below gives the covariates that it requires in order to predict detection probability.
+
+* `pos`: The position the observer (camera) is scanning. This is a factor with possible values "Centre", "Near" or "Far". NOTE that `pos` need not be specified, and if it is not, the resulting detection probability is the average predicted probability across the positions.
+
+* `secchi`: A measure of the maximum depth that a Secchi disk can be seen. This is a continuous variable. The data from experiment used to construct the GAM model used `secchi` ranging from 1.5 to 7.5.
+
+* `cloud`: A measure of cloud cover, with higher numbers being more cloud.The data from experiment used to construct the GAM model used `cloud` ranging from 0 to 8.
+
+* `hdglare`: The HiDef Ltd measure of glare. This is a factor with levels "1", "2" or "3".
+
+The tag model is in the gam object called `vismodel`, which can be accessed after loading the library as follows
+
+```{r vismodel}
+library(predictp)
+data("vismodel")
+```
+
+You can look at it like this
+```{r sumvismodel}
+vismodel
+```
+
+To predict, it requires a data frame with columns as specified above. There are two example data frames in the package, called `eg_viscov` and `eg_viscov_withpos`. They are identical, except that the former does not have a "pos" column:
+
+```{r viscov}
+data("eg_viscov")
+data("eg_viscov_withpos")
+eg_viscov
+eg_viscov_withpos
+```
+
+### The Tag Model
+
+The tag model has two components, a GAM model constructed from ARGOS tag data, and the observed proportion of times that animals spend at, or shallower than, each one of 7 depths from 0m to 3m at 0.5m depth intervals (from Tielman et al., 2013).
+
+These proportions of times are contained in the object `cdfdataframe` in the package, which you can look at like this:
+
+```{r cdfdataframe}
+data("cdfdataframe")
+cdfdataframe
+```
+
+The GAM model is requires the following covariates:
+
+* `periodfac`: A factor indicating the period of in the day, with levels "0", "1", "2", "3".
+
+* `diy`: An integer giving the day of the year, with January 1st as 1.
+
+This model is in the gam object called `tagmodel`, which can be accessed as follows
+
+```{r tagmodel}
+data("tagmodel")
+```
+
+You can look at it like this
+```{r sumtagmodel}
+tagmodel
+```
+
+It requires a data frame with columns as specified above. There is an example data frame in the package, called `eg_tagcov`:
+
+```{r tagcov}
+data("eg_tagcov")
+eg_tagcov
+```
+
+### How to Predict Detection Probability
+
+The key function for predicting detection probability is the function `psee`. To get predicted detection probabilities you just pass it a visibility covariate data frame, a tag covariate data frame with the same number of rows, `vismodel` and `tagmodel`, in that order. For example, using the visibility covariate data frame `eg_viscov` and the tag covariate data frame `eg_tagcov`:
+```{r psee, warning=FALSE}
+p = psee(eg_viscov, eg_tagcov, vismodel, tagmodel)
+```
+
+This gives us these estimates of detection probability: `r signif(p,3)`. (The data frame `cdfdataframe` is used inside the function `psee`.)
+
+
+## What Happens Under the Hood
+
+The visibility model is a model for $p(see|x,\mathbf{z})$, where $x$ is depth and $\mathbf{z}$ is a vector of covariates for the visibility model, as specified above (e.g. a row of the data frame `eg_viscov`). 
+
+The tag model and the information on proportion of times at depth that is contained in `cdfdataframe` together comprise a model for the cumulative distribution function of depths of animals, $F(x|\mathbf{u})$, where $\mathbf{u}$ is a vector of covariates for the tag model, as specified above (e.g., a row of the data frame `tagcov`). Or equivalently the comprise a model for the probability density function of animal depths, $f(x|\mathbf{u})= \frac{dF(x|\mathbf{u})}{dx}$.
+
+All that the function `psee` does, is calculate the integral $p(see)=\int_0^3p(see|x,\mathbf{z})f(x|\mathbf{u})dx$, which you can think of as a weighted average detection probability across all depths between 0 and 3, with weighs proportional to the time animals spend at each depth.
+
+### Constructing $f(x|\mathbf{u})$
+
+The ARGOS tag data is such that we can estimate from it only the probability that an animal is within 2m of the surface, i.e., $pr(x<=2|\mathbf{u}) = F(x|\mathbf{u})$. That is, we can only estimate $F(x|\mathbf{u})$ for the single value $x=2$ from these data, not the whole function $F(x|\mathbf{u})$. 
+
+The V-tag data gives us higher resoltion data in the depth ($x$) dimension. We can get an estimate of the relative proportion of time animals spend shallower than any depth (up to depth 3m) by smoothing through the V-tag proportions contained in `cdfdataframe`. Let's call this curve $F^0(x)$ and the corresponding probability density function $f^0(x)$. The figure below shows $F^0(x)$ (left) and $f^0(x)$ (right), while the dots in the left plot show the data in `cdfdataframe`.
+
+```{r, fig.show='hold'}
+# Make a smooth interpolating spline function for the CDF
+depthcdf = splinefun(cdfdataframe$depth,cdfdataframe$cdf)
+# ... and plot it:
+x = seq(0,3,length=50)
+plot(x,depthcdf(x),type="l",xlab="Depth (x)",ylab=expression({F^0}(x)),cex.lab=0.75)
+points(cdfdataframe$depth,cdfdataframe$cdf)
+plot(x,depthcdf(x,deriv=1),type="l",xlab="Depth (x)",ylab=expression({f^0}(x)),cex.lab=0.75)
+```
+
+
+We can use the V-tag data to extend the model for $F(x=2|\mathbf{u})$ obtained from the ARGOS tag data, to all $0\leq x\leq3$ if we assume that the *relative* proportion of time animals spend at each depth stays constant, and that all the covariates $\mathbf{u}$ do is to adjust the absolute proportion of time they spend at each depth. In this case, $F(x|\mathbf{u})=F(x=2|\mathbf{u})\frac{F^0(x)}{F^0(2)}$, from which we get the probability density function $f(x|\mathbf{u})=\frac{F(x|\mathbf{u})}{dx}$ that we need for the integral above, in order to calculate $p(see)$.
+
+## Some plotting functions
+
+The `predictp` package contains a function to plot the visibility model, $p(see|x)$, which is called `plotdetfn`. You pass it the visibility model (`vismodel`) and a single row from a visibility covriate data frame (like `eg_viscov_withpos` or  `eg_viscov`, for example). When the data frame contains a column `pos` 95\% confidence intervals (CIs) are plotted (dotted lines), like this
+```{r plot_withpos}
+plotdetfn(vismodel,eg_viscov_withpos[1,])
+```
+
+but when it does not, you get a warning and no 95\% CI lines - because this has not yet been implemented in the package.
+```{r plot}
+plotdetfn(vismodel,eg_viscov[1,])
+```
+
+You can also choose not to plot the 95\% CI lines by using the argument `addCI`, and then you don't get the CI lines or the warning:
+```{r plot_noCI}
+plotdetfn(vismodel,eg_viscov_withpos[1,],addCI=FALSE)
+plotdetfn(vismodel,eg_viscov[1,],addCI=FALSE)
+```
+
+## Help
+
+The command `help(package="predictp)` or just `?predictp` gets you the package's help files. Click `index` at the bottom of this help page to see the functions for which help is available.
+

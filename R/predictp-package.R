@@ -1,0 +1,20 @@
+#' @name predictp-package
+#' @aliases predictp
+#' @docType package
+#' @title Predict detection probability from visibility model and depth model
+#' @description Predict detection probability from a gam object defining the probability
+#' of detection, given depth (the visibility model), a gam object defining the
+#' probability of the target being within 2m of the surface (p(x<2)), and a
+#' data frame giving the values of the cumulative distribution function (CDF) of
+#' depth at a few points from 0m to 3m. It is assumed that the actual CDF of depth
+#' (the depth model) is this CDF scaled so that its value at 2 is equal to
+#' p(x<2) obtained from the gam object defining p(x<2). The predicted detection probability is the
+#' expected value of p(x<2) under this CDF of depth.
+#' @details \tabular{ll}{ Package: \tab predictp \cr Type: \tab Package \cr
+#'   Version: \tab 1.0 \cr Date: \tab 2024-08-12 \cr License: \tab GNU General
+#'   Public License Version 2 or later \cr }
+#'
+#' @author David Borchers \email{dlb@@st-andrews.ac.uk}
+#'
+#'   Maintainer: David Borchers \email{dlb@@st-andrews.ac.uk}
+NULL
