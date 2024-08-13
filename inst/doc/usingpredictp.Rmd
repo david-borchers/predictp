@@ -2,7 +2,7 @@
 title: "Using predictp"
 author: "David Borchers"
 date: "`r Sys.Date()`"
-output: rmarkdown::pdf_vignette
+output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Using predictp}
   %\VignetteEngine{knitr::rmarkdown}
