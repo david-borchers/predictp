@@ -181,9 +181,12 @@ plotdetfn = function(model,covdf,ndepths=50,dmax=3,addCI=TRUE,...) {
 #' @title Predict a single detection probability.
 #'
 #' @description
-#'
 #'  Predicts detection probability when a dataframe with one row containing a
 #'  single set of visibility covariates is input.
+#'
+#'  NB: The terms of \code{tagmodel} that are used for prediction are hardwired
+#'  into this function, so passing a different \code{tagmod} will likely give
+#'  incorrect predictions or make the function fall over.
 #'
 #' @param viscov A single-row data frame of explanatory variables for \code{vismodel}.
 #' @param tagcov A single-row data frame of explanatory variables for \code{tagmodel}.
@@ -213,8 +216,11 @@ psee1 = function(viscov,tagcov,vismodel,tagmodel) {
   # Make a smooth interpolating spline function for the CDF
   depthcdf = splinefun(cdfdataframe$depth,cdfdataframe$cdf)
 
-  # make sure that tagcov has a column with covariate "id" that is zero
-  tagcov$id = rep(0,nrow(tagcov))
+  # Make sure that tagcov has a column with covariate "id" that is valid.
+  # It is not used, so it does not matter what it is, it just needs to be
+  # a valid level to avoid warning messages
+  # (tagmodel$model$id contains the original $id data)
+  tagcov$id = rep(tagmodel$model$id[1],nrow(tagcov))
 
   # construct the function to be integrated:
   infun = function(x,vismodel,tagmodel,viscov,tagcov,depthcdf) {
@@ -234,8 +240,14 @@ psee1 = function(viscov,tagcov,vismodel,tagmodel) {
       p.Far = predict(vismodel,type="response",se.fit=FALSE,newdata=predlist$far)
       psee.x = p.Centre*1/5 + p.Near*2/5 + p.Far*2/5
     }
-    # calcuate prob(x<2):
-    pred2m = predict(tagmodel,type="response",se.fit=FALSE,newdata=tagcov,newdata.guaranteed=FALSE)
+    # calcuate prob(x<2), zero-ing out the random effects:
+#    pred2m = predict(tagmodel,type="response",se.fit=FALSE,newdata=tagcov,newdata.guaranteed=FALSE)
+
+    # HERE IS WHERE THE TERMS OF tagmodel ARE HARDWIRED:
+    tagterms = predict(tagmodel,type="terms",se.fit=FALSE,newdata=tagcov,terms=c("diy","periodfac","s(diy)"))
+    taglp = as.numeric(attr(tagterms,"constant")) + apply(tagterms,1,sum)
+    pred2m = plogis(taglp)
+
     # calculate scaled PDF of x, scaling by prob(x<2) divided by Tielman's prob(x<2)
     # depthcdf(x) is Tielman's CDF(x) and depthcdf(x, deriv=1) is
     fx = rep(pred2m,length(x)) * depthcdf(x,deriv=1) / depthcdf(2)
@@ -257,6 +269,11 @@ psee1 = function(viscov,tagcov,vismodel,tagmodel) {
 #'  Predicts detection probability when a dataframe with one or more rows
 #'  containing a sets of visibility covariates is input. The function just
 #'  loops through each row calling \code{psee1} with each row.
+#'
+#'  NB: The terms of \code{tagmodel} that are used for prediction are hardwired
+#'  into this function, so passing a different \code{tagmod} will likely give
+#'  incorrect predictions or make the function fall over.
+
 #'
 #' @param viscov A data frame of explanatory variables for \code{vismodel}, each
 #' row giving the covariates associated with one detection.

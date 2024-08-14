@@ -26,6 +26,10 @@ covariates as specified by the rows of \code{viscov}.
 Predicts detection probability when a dataframe with one or more rows
 containing a sets of visibility covariates is input. The function just
 loops through each row calling \code{psee1} with each row.
+
+NB: The terms of \code{tagmodel} that are used for prediction are hardwired
+into this function, so passing a different \code{tagmod} will likely give
+incorrect predictions or make the function fall over.
 }
 \examples{
 data("eg_tagcov")

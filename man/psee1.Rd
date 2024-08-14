@@ -21,6 +21,10 @@ The marginal probability of detecting an animal.
 \description{
 Predicts detection probability when a dataframe with one row containing a
 single set of visibility covariates is input.
+
+NB: The terms of \code{tagmodel} that are used for prediction are hardwired
+into this function, so passing a different \code{tagmod} will likely give
+incorrect predictions or make the function fall over.
 }
 \examples{
 data("eg_tagcov")
