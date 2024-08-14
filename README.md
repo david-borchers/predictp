@@ -23,6 +23,9 @@ You can install the development version of predictp like so:
 ``` r
 require(devtools)
 install_github("david-borchers/predictp", build_vignettes = TRUE)
+tools::buildVignettes(dir = ".", tangle=TRUE)
+dir.create("inst/doc")
+file.copy(dir("vignettes", full.names=TRUE), "inst/doc", overwrite=TRUE)
 ```
 
 ## Example
