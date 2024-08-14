@@ -33,7 +33,7 @@ file.copy(dir("vignettes", full.names=TRUE), "inst/doc", overwrite=TRUE)
 This is a basic example which shows you how to predict detection
 probability using the depth detectoin probability model `vismodel`, the
 depth distribution model `tagmodel`, the visibility covariate data frame
-`eg_viscov` and the depth distribution covariate model `eg_tagcov`:
+`eg_viscov` and the depth distribution covariate data `eg_tagcov`:
 
 ``` r
 library(predictp)
