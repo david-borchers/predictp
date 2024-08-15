@@ -92,7 +92,7 @@ makepredf = function(covdf,depths) {
 #' @returns Returns a list containing the estimated detection probability at each
 #' depth (\code{p}), the lower and upper 95% CI values at these depths (\code{lcl}
 #' and \code{ucl}), and the depths at which the probabilities were calculated
-#' (\code{depth).
+#' (\code{depth}).
 #'
 #' @export pseex
 #'
@@ -148,6 +148,9 @@ pseex = function(model,covdf,ndepths=50,dmax=3,addCI=TRUE) {
 #' @param dmax The maximum depth to consider
 #' @param addCI If TRUE 95 percent CI lines are added, UNLESS \code{pseex} returns
 #' NAs for $lcl and $ucl (which it currently does when marginalising over variable pos).
+#' @param doplot If TRUE, a plot is created, else no plotting is done (which is only
+#' useful if you assign the call to \code{plotdetfn} to some variable so that you get
+#' the values that would have been plotted.)
 #' @param ... Arguments to \code{plot}, other than \code{ylim}, \code{xlab},
 #' \code{ylab}, which are hardwired.
 #'
@@ -160,19 +163,21 @@ pseex = function(model,covdf,ndepths=50,dmax=3,addCI=TRUE) {
 #'
 #' @export plotdetfn
 #'
-plotdetfn = function(model,covdf,ndepths=50,dmax=3,addCI=TRUE,...) {
+plotdetfn = function(model,covdf,ndepths=50,dmax=3,addCI=TRUE,doplot=TRUE,...) {
   est = pseex(model,covdf,ndepths=ndepths,dmax=dmax,addCI=addCI)
   # then do the plotting
-  if(addCI & !is.na(est$lcl[1]) & !is.na(est$ucl[1])) ylim = range(est$lcl,est$ucl)
-  else ylim = range(0,est$p)
-  plot(est$depth,est$p,type="l",ylim=ylim,xlab="Depth",ylab="p(see)",...)
-  # add confidence intervals if
-  if(!is.na(est$lcl[1]) & addCI) lines(est$depth,est$lcl,lty=2)
-  if(!is.na(est$ucl[1]) & addCI) lines(est$depth,est$ucl,lty=2)
+  if(doplot) {
+    if(addCI & !is.na(est$lcl[1]) & !is.na(est$ucl[1])) ylim = range(est$lcl,est$ucl)
+    else ylim = range(0,est$p)
+    plot(est$depth,est$p,type="l",ylim=ylim,xlab="Depth",ylab="p(see)",...)
+    # add confidence intervals if
+    if(!is.na(est$lcl[1]) & addCI) lines(est$depth,est$lcl,lty=2)
+    if(!is.na(est$ucl[1]) & addCI) lines(est$depth,est$ucl,lty=2)
 
-  txt = c(paste("pos: ",covdf$pos),paste("secchi: ",covdf$secchi),paste("SS: ",covdf$SS),
-          paste("cloud: ",covdf$cloud),paste("hdglare: ",covdf$hdglare))
-  legend("topright",legend=txt,bty="n",cex=0.75)
+    txt = c(paste("pos: ",covdf$pos),paste("secchi: ",covdf$secchi),paste("SS: ",covdf$SS),
+            paste("cloud: ",covdf$cloud),paste("hdglare: ",covdf$hdglare))
+    legend("topright",legend=txt,bty="n",cex=0.75)
+  }
 
   invisible(data.frame(depth=est$depth, p=est$p, lcl=est$lcl, ucl=est$ucl))
 }
@@ -198,8 +203,8 @@ plotdetfn = function(model,covdf,ndepths=50,dmax=3,addCI=TRUE,...) {
 #' \code{ylab}, which are hardwired.
 #'
 #' @returns Invisibly returns a data frame with columns \code{$depth}, and the
-#' cdf or pdf (called \code{$F0), \code{$F), \code{$f0), or \code{$f),
-#' depending what you asked for}
+#' cdf or pdf (called \code{$F0}, \code{$F}, \code{$f0}, or \code{$f},
+#' depending what you asked for.)
 #'
 #' @examples
 #' data("eg_tagcov")
