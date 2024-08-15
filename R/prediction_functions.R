@@ -197,8 +197,9 @@ plotdetfn = function(model,covdf,ndepths=50,dmax=3,addCI=TRUE,...) {
 #' @param ... Arguments to \code{plot}, other than \code{type}, \code{xlab},
 #' \code{ylab}, which are hardwired.
 #'
-#' @returns Invisibly returns a list with \code{depth}, and the cdf \code{F(depth)}
-#' or pdf \code{f(depth)}
+#' @returns Invisibly returns a data frame with columns \code{$depth}, and the
+#' cdf or pdf (called \code{$F0), \code{$F), \code{$f0), or \code{$f),
+#' depending what you asked for}
 #'
 #' @examples
 #' data("eg_tagcov")
@@ -255,7 +256,7 @@ plotavail = function(depths,tagmodel=NULL,covdf=NULL,what="CDF",doplot=TRUE,...)
       # depthcdf(x) is Tielman's CDF(x) and depthcdf(x, deriv=1) is
       y = rep(pred2m,length(depths)) * depthcdf(depths,deriv=1) / depthcdf(2)
       if(doplot) plot(depths,y,xlab="Depth (x)",ylab=expression(f(x)),...)
-      invisible(list(depth=depths, f=y))
+      invisible(data.frame(depth=depths, f=y))
     }
   }
 }

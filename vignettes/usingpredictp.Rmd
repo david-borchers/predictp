@@ -154,9 +154,7 @@ plotdetfn(vismodel,eg_viscov[1,],addCI=FALSE)
 
 You can also plot the tag (or availability) model - either the cumulative distributon
 function or the probability distribution function. For example, here's how to create a plot of 
-$F^0(x)$ (solid line) with overlaid with the $F(x)$ for each row in `eg_tagcov` (dashed lines).
-(If you change `doplot=FALSE` to `doplot=TRUE` below you also get a plot each time `plotavail` 
-is called.)
+$F^0(x)$ (solid line) with overlaid with the $F(x)$ for each row in `eg_tagcov` (dashed lines)
 ```{r plotavail.CDF}
 data("eg_tagcov")
 data("tagmodel")
@@ -183,6 +181,14 @@ for(i in 1:n) {
 ylim.f = range(pdf0$f0,pdf)
 plot(depths,pdf0$f0,xlab="Depth (x)",ylab=expression(f(x)),ylim=ylim.f,type="l")
 for(i in 1:n) lines(depths,pdf[i,],lty=2,col=i)
+```
+
+If you change `doplot=FALSE` to `doplot=TRUE` when calling `plotavail` you get a plot each 
+time `plotavail` is called. Also, note that when you assign the call to the function `plotavail` 
+to some variable (e.g., to `CDF`, or `CDF0`, or `PDF`, or `PDF0` above) you get a data frame with 
+the coordinates used to make the plot. For example: 
+```{r FO}
+CDF0
 ```
 
 ## Help

@@ -77,3 +77,6 @@ ylim.f = range(pdf0$f0,pdf)
 plot(depths,pdf0$f0,xlab="Depth (x)",ylab=expression(f(x)),ylim=ylim.f,type="l")
 for(i in 1:n) lines(depths,pdf[i,],lty=2,col=i)
 
+## ----FO-----------------------------------------------------------------------
+CDF0
+

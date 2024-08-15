@@ -33,8 +33,9 @@ values), else you get nothing from the function.}
 \code{ylab}, which are hardwired.}
 }
 \value{
-Invisibly returns a list with \code{depth}, and the cdf \code{F(depth)}
-or pdf \code{f(depth)}
+Invisibly returns a data frame with columns \code{$depth}, and the
+cdf or pdf (called \code{$F0), \code{$F), \code{$f0), or \code{$f),
+depending what you asked for}
 }
 \description{
 Plots an availability function.
