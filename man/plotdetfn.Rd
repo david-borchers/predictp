@@ -4,7 +4,15 @@
 \alias{plotdetfn}
 \title{Plots a detection function.}
 \usage{
-plotdetfn(model, covdf, ndepths = 50, dmax = 3, addCI = TRUE, ...)
+plotdetfn(
+  model,
+  covdf,
+  ndepths = 50,
+  dmax = 3,
+  addCI = TRUE,
+  doplot = TRUE,
+  ...
+)
 }
 \arguments{
 \item{model}{A gam object defining p(see|depth).}
@@ -19,11 +27,15 @@ are evenly spaced from 0 to \code{dmax}}
 \item{addCI}{If TRUE 95 percent CI lines are added, UNLESS \code{pseex} returns
 NAs for $lcl and $ucl (which it currently does when marginalising over variable pos).}
 
+\item{doplot}{If TRUE, a plot is created, else no plotting is done (which is only
+useful if you assign the call to \code{plotdetfn} to some variable so that you get
+the values that would have been plotted.)}
+
 \item{...}{Arguments to \code{plot}, other than \code{ylim}, \code{xlab},
 \code{ylab}, which are hardwired.}
 }
 \value{
-Invisibly returns a list with \code{depth}, \code{p}, \code{lcl}, \code{ucl}.
+Invisibly returns a data frame with \code{depth}, \code{p}, \code{lcl}, \code{ucl}.
 }
 \description{
 Plots a detection function.

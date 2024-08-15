@@ -22,7 +22,7 @@ are evenly spaced from 0 to \code{dmax}}
 Returns a list containing the estimated detection probability at each
 depth (\code{p}), the lower and upper 95\% CI values at these depths (\code{lcl}
 and \code{ucl}), and the depths at which the probabilities were calculated
-(\code{depth).
+(\code{depth}).
 }
 \description{
 Calculates p(see|depth) at a range of depths.

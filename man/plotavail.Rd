@@ -34,8 +34,8 @@ values), else you get nothing from the function.}
 }
 \value{
 Invisibly returns a data frame with columns \code{$depth}, and the
-cdf or pdf (called \code{$F0), \code{$F), \code{$f0), or \code{$f),
-depending what you asked for}
+cdf or pdf (called \code{$F0}, \code{$F}, \code{$f0}, or \code{$f},
+depending what you asked for.)
 }
 \description{
 Plots an availability function.
