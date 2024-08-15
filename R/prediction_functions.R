@@ -178,6 +178,89 @@ plotdetfn = function(model,covdf,ndepths=50,dmax=3,addCI=TRUE,...) {
 }
 
 
+#' @title Plots an availability function.
+#'
+#' @description
+#'
+#'  Plots an availability function.
+#'
+#' @param depths Depths at which to evaluate the availability function.
+#' @param tagmodel A gam object defining p(depth<=2). If missing then interpolated
+#' values of the CDF of Tielman et al. (2013) are returned.
+#' @param covdf A single-row data frame of explanatory variables for \code{tagmodel}.
+#' This is ignored if no \code{tagmodel} is passed.
+#' @param what If "CDF" then the cumulative distribution function is plotted, else
+#' probability density function is plotted.
+#' @param doplot If TRUE, plotting is done, else only values are calculated (in
+#' which case you need to use an assignment (see examples) to get hold of the
+#' values), else you get nothing from the function.
+#' @param ... Arguments to \code{plot}, other than \code{type}, \code{xlab},
+#' \code{ylab}, which are hardwired.
+#'
+#' @returns Invisibly returns a list with \code{depth}, and the cdf \code{F(depth)}
+#' or pdf \code{f(depth)}
+#'
+#' @examples
+#' data("eg_tagcov")
+#' data("tagmodel")
+#' depths = seq(0,3,length=21)
+#' # To plot and print the cdf (F0) of Tielman et al. (2013):
+#' par(mfrow=c(2,2))
+#' F0 = plotavail(depths,tagmodel=NULL,covdf=NULL,what="CDF",type="l")
+#' F0
+#' # To plot and print the scaled cdf (F) for availability:
+#' F = plotavail(depths,tagmodel=tagmodel,covdf=eg_tagcov[1,],what="CDF",type="l")
+#' F
+#' # To plot and print the pdf (f0) of Tielman et al. (2013):
+#' f0 = plotavail(depths,tagmodel=NULL,covdf=NULL,what="PDF",type="l")
+#' f0
+#' # To plot and print the scaled pdf (f) for availability:
+#' f = plotavail(depths,tagmodel=tagmodel,covdf=eg_tagcov[1,],what="PDF",type="l")
+#' f
+#' @export plotavail
+#'
+plotavail = function(depths,tagmodel=NULL,covdf=NULL,what="CDF",doplot=TRUE,...) {
+
+  data("cdfdataframe")
+  depthcdf = splinefun(cdfdataframe$depth,cdfdataframe$cdf)
+
+  if(is.null(tagmodel)) {
+    if(what=="CDF") {
+      y = depthcdf(depths)
+      if(doplot) plot(depths,depthcdf(depths),xlab="Depth (x)",ylab=expression({F^0}(x)),...)
+      invisible(list(depth=depths, F0=y))
+    }else {
+      y = depthcdf(depths,deriv=1)
+      if(doplot) plot(depths,y,xlab="Depth (x)",ylab=expression({f^0}(x)),...)
+      invisible(list(depth=depths, f0=y))
+    }
+  }else {
+    # Make sure that tagcov has a column with covariate "id" that is valid.
+    # It is not used, so it does not matter what it is, it just needs to be
+    # a valid level to avoid warning messages
+    # (tagmodel$model$id contains the original $id data)
+    covdf$id = rep(tagmodel$model$id[1],nrow(covdf))
+    tagterms = predict(tagmodel,type="terms",se.fit=FALSE,newdata=covdf,terms=c("diy","periodfac","s(diy)"))
+    taglp = as.numeric(attr(tagterms,"constant")) + sum(tagterms)
+    pred2m = plogis(taglp)
+
+    if(what=="CDF") {
+      # calculate scaled CDF of x, scaling by prob(x<2) divided by Tielman's prob(x<2)
+      # depthcdf(x) is Tielman's CDF(x) and depthcdf(x, deriv=1) is
+      y = rep(pred2m,length(depths)) * depthcdf(depths) / depthcdf(2)
+      if(doplot) plot(depths,y,xlab="Depth (x)",ylab=expression(F(x)),...)
+      invisible(list(depth=depths, F=y))
+    }else {
+      # calculate scaled PDF of x, scaling by prob(x<2) divided by Tielman's prob(x<2)
+      # depthcdf(x) is Tielman's CDF(x) and depthcdf(x, deriv=1) is
+      y = rep(pred2m,length(depths)) * depthcdf(depths,deriv=1) / depthcdf(2)
+      if(doplot) plot(depths,y,xlab="Depth (x)",ylab=expression(f(x)),...)
+      invisible(list(depth=depths, f=y))
+    }
+  }
+}
+
+
 #' @title Predict a single detection probability.
 #'
 #' @description

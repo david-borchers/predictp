@@ -132,20 +132,57 @@ We can use the V-tag data to extend the model for $F(x=2|\mathbf{u})$ obtained f
 
 ## Some plotting functions
 
+# Plotting the visibility model
+
 The `predictp` package contains a function to plot the visibility model, $p(see|x)$, which is called `plotdetfn`. You pass it the visibility model (`vismodel`) and a single row from a visibility covriate data frame (like `eg_viscov_withpos` or  `eg_viscov`, for example). When the data frame contains a column `pos` 95\% confidence intervals (CIs) are plotted (dotted lines), like this
-```{r plot_withpos}
+```{r plotvis_withpos}
 plotdetfn(vismodel,eg_viscov_withpos[1,])
 ```
 
 but when it does not, you get a warning and no 95\% CI lines - because this has not yet been implemented in the package.
-```{r plot}
+```{r plotvis}
 plotdetfn(vismodel,eg_viscov[1,])
 ```
 
 You can also choose not to plot the 95\% CI lines by using the argument `addCI`, and then you don't get the CI lines or the warning:
-```{r plot_noCI}
+```{r plotvis_noCI}
 plotdetfn(vismodel,eg_viscov_withpos[1,],addCI=FALSE)
 plotdetfn(vismodel,eg_viscov[1,],addCI=FALSE)
+```
+
+# Plotting the tag/availability model
+
+You can also plot the tag (or availability) model - either the cumulative distributon
+function or the probability distribution function. For example, here's how to create a plot of 
+$F^0(x)$ (solid line) with overlaid with the $F(x)$ for each row in `eg_tagcov` (dashed lines).
+(If you change `doplot=FALSE` to `doplot=TRUE` below you also get a plot each time `plotavail` 
+is called.)
+```{r plotavail.CDF}
+data("eg_tagcov")
+data("tagmodel")
+depths = seq(0,3,length=21)
+n = nrow(eg_tagcov)
+CDF = matrix(rep(NA,n*length(depths)),nrow=n)
+CDF0 = plotavail(depths,tagmodel=NULL,covdf=NULL,what="CDF",doplot=FALSE)
+for(i in 1:n) {
+  CDF[i,] = plotavail(depths,tagmodel=tagmodel,covdf=eg_tagcov[i,],what="CDF",doplot=FALSE)$F
+}
+ylim.F = range(CDF0$F0,CDF)
+plot(depths,CDF0$F0,xlab="Depth (x)",ylab=expression(F(x)),ylim=ylim.F,type="l")
+for(i in 1:n) lines(depths,CDF[i,],lty=2,col=i)
+```
+
+And here's how to create a plot of $f^0(x)$ (solid line) with overlaid with the $f(x)$ for 
+each row in `eg_tagcov` (dashed lines)
+```{r plotavail.pdf}
+pdf = matrix(rep(NA,n*length(depths)),nrow=n)
+pdf0 = plotavail(depths,tagmodel=NULL,covdf=NULL,what="PDF",doplot=FALSE)
+for(i in 1:n) {
+  pdf[i,] = plotavail(depths,tagmodel=tagmodel,covdf=eg_tagcov[i,],what="PDF",doplot=FALSE)$f
+}
+ylim.f = range(pdf0$f0,pdf)
+plot(depths,pdf0$f0,xlab="Depth (x)",ylab=expression(f(x)),ylim=ylim.f,type="l")
+for(i in 1:n) lines(depths,pdf[i,],lty=2,col=i)
 ```
 
 ## Help
