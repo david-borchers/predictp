@@ -150,6 +150,12 @@ plotdetfn(vismodel,eg_viscov_withpos[1,],addCI=FALSE)
 plotdetfn(vismodel,eg_viscov[1,],addCI=FALSE)
 ```
 
+If you want the x- and y- values used in the plots you just assign the call to `plotdetfn` to some variable. For example:
+```{r detfunvalues}
+detfun = plotdetfn(vismodel,eg_viscov[1,],addCI=FALSE)
+detfun
+```
+
 # Plotting the tag/availability model
 
 You can also plot the tag (or availability) model - either the cumulative distributon

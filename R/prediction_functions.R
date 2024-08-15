@@ -151,7 +151,7 @@ pseex = function(model,covdf,ndepths=50,dmax=3,addCI=TRUE) {
 #' @param ... Arguments to \code{plot}, other than \code{ylim}, \code{xlab},
 #' \code{ylab}, which are hardwired.
 #'
-#' @returns Invisibly returns a list with \code{depth}, \code{p}, \code{lcl}, \code{ucl}.
+#' @returns Invisibly returns a data frame with \code{depth}, \code{p}, \code{lcl}, \code{ucl}.
 #'
 #' @examples
 #' data("eg_viscov")
@@ -174,7 +174,7 @@ plotdetfn = function(model,covdf,ndepths=50,dmax=3,addCI=TRUE,...) {
           paste("cloud: ",covdf$cloud),paste("hdglare: ",covdf$hdglare))
   legend("topright",legend=txt,bty="n",cex=0.75)
 
-  invisible(list(depth=est$depth, p=est$p, lcl=est$lcl, ucl=est$ucl))
+  invisible(data.frame(depth=est$depth, p=est$p, lcl=est$lcl, ucl=est$ucl))
 }
 
 
