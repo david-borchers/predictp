@@ -53,6 +53,10 @@ plotdetfn(vismodel,eg_viscov[1,])
 plotdetfn(vismodel,eg_viscov_withpos[1,],addCI=FALSE)
 plotdetfn(vismodel,eg_viscov[1,],addCI=FALSE)
 
+## ----detfunvalues-------------------------------------------------------------
+detfun = plotdetfn(vismodel,eg_viscov_withpos[1,],addCI=FALSE,doplot=FALSE)
+detfun[1:10,]
+
 ## ----plotavail.CDF------------------------------------------------------------
 data("eg_tagcov")
 data("tagmodel")

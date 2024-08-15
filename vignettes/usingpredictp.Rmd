@@ -150,10 +150,11 @@ plotdetfn(vismodel,eg_viscov_withpos[1,],addCI=FALSE)
 plotdetfn(vismodel,eg_viscov[1,],addCI=FALSE)
 ```
 
+### Getting the values out of the plot
 If you want the x- and y- values used in the plots you just assign the call to `plotdetfn` to some variable. For example:
 ```{r detfunvalues}
-detfun = plotdetfn(vismodel,eg_viscov[1,],addCI=FALSE)
-detfun
+detfun = plotdetfn(vismodel,eg_viscov_withpos[1,],addCI=FALSE,doplot=FALSE)
+detfun[1:10,]
 ```
 
 # Plotting the tag/availability model
@@ -190,9 +191,12 @@ for(i in 1:n) lines(depths,pdf[i,],lty=2,col=i)
 ```
 
 If you change `doplot=FALSE` to `doplot=TRUE` when calling `plotavail` you get a plot each 
-time `plotavail` is called. Also, note that when you assign the call to the function `plotavail` 
-to some variable (e.g., to `CDF`, or `CDF0`, or `PDF`, or `PDF0` above) you get a data frame with 
-the coordinates used to make the plot. For example: 
+time `plotavail` is called. 
+
+### Getting the values out of the plot
+When you assign the call to the function `plotavail` to some variable (e.g., to `CDF`, 
+or `CDF0`, or `PDF`, or `PDF0` above) you get a data frame with the coordinates used to make 
+the plot. For example: 
 ```{r FO}
 CDF0
 ```
