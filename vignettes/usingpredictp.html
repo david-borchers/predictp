@@ -12,7 +12,7 @@
 
 <meta name="author" content="David Borchers" />
 
-<meta name="date" content="2024-08-15" />
+<meta name="date" content="2024-08-16" />
 
 <title>Using predictp</title>
 
@@ -340,7 +340,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Using predictp</h1>
 <h4 class="author">David Borchers</h4>
-<h4 class="date">2024-08-15</h4>
+<h4 class="date">2024-08-16</h4>
 
 
 
@@ -588,8 +588,9 @@ the call to <code>plotdetfn</code> to some variable. For example:</p>
 <h1>Plotting the tag/availability model</h1>
 <p>You can also plot the tag (or availability) model - either the
 cumulative distributon function or the probability distribution
-function. For example, here’s how to create a plot of <span class="math inline">\(F^0(x)\)</span> (solid line) with overlaid with
-the <span class="math inline">\(F(x)\)</span> for each row in
+function, using the function <code>plotavail</code>. For example, here’s
+how to create a plot of <span class="math inline">\(F^0(x)\)</span>
+(solid line) with overlaid with the <span class="math inline">\(F(x)\)</span> for each row in
 <code>eg_tagcov</code> (dashed lines)</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;eg_tagcov&quot;</span>)</span>
 <span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;tagmodel&quot;</span>)</span>
