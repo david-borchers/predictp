@@ -160,7 +160,7 @@ detfun[1:10,]
 # Plotting the tag/availability model
 
 You can also plot the tag (or availability) model - either the cumulative distributon
-function or the probability distribution function. For example, here's how to create a plot of 
+function or the probability distribution function, using the function `plotavail`. For example, here's how to create a plot of 
 $F^0(x)$ (solid line) with overlaid with the $F(x)$ for each row in `eg_tagcov` (dashed lines)
 ```{r plotavail.CDF}
 data("eg_tagcov")
