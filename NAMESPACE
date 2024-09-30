@@ -3,6 +3,7 @@
 export(makepredf)
 export(plotavail)
 export(plotdetfn)
+export(predict2m)
 export(psee)
 export(psee1)
 export(pseex)

@@ -397,3 +397,38 @@ psee = function(viscov,tagcov,vismodel,tagmodel) {
   }
   return(p)
 }
+
+
+
+#' @title Predict probability of being in (0m,2m).
+#'
+#' @description
+#'
+#'  Predicts mean probability of an animal being in 0m to 2m (i.e., at mean of
+#'  the individual random effect), using the gam model \code{tagmodel}.
+#'
+#' @param newdata A data frame containing explanatory variables
+#' \code{diy} (day in year, numeric), and \code{periodfac} (period factor: "0",
+#' "1","2",or "3").
+#'
+#' @examples
+#' newdata = data.frame(diy=c(0,100,200,300,365),periodfac=c("0","1","2","3","0"))
+#' predict2m(newdata)
+#'
+#' @returns A vector of probabilities of an animal being in 0m to 2m.
+#'
+#' @export predict2m
+#'
+predict2m = function(newdata) {
+  data("tagmodel")
+  # Make sure that tagcov has a column with covariate "id" that is valid.
+  # It is not used, so it does not matter what it is, it just needs to be
+  # a valid level to avoid warning messages
+  # (tagmodel$model$id contains the original $id data)
+  newdata$id = rep(tagmodel$model$id[1],nrow(newdata))
+  tagterms = predict(tagmodel,type="terms",se.fit=FALSE,newdata=newdata,terms=c("diy","periodfac","s(diy)"))
+  taglp = as.numeric(attr(tagterms,"constant")) + apply(tagterms,1,sum)
+  pred2m = plogis(taglp)
+  return(pred2m)
+}
+
