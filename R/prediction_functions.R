@@ -38,7 +38,7 @@ makepredf = function(covdf,depths) {
       pos=rep(covdf$pos,ndepths),
       secchi = rep(covdf$secchi,ndepths),
       SS = rep(covdf$SS,ndepths),
-      cloud = rep(0,ndepths),
+      cloud = rep(covdf$cloud,ndepths),
       hdglare = rep(covdf$hdglare,ndepths)
     )
     return(predf)
@@ -48,7 +48,7 @@ makepredf = function(covdf,depths) {
       pos=rep("Centre",ndepths),
       secchi = rep(covdf$secchi,ndepths),
       SS = rep(covdf$SS,ndepths),
-      cloud = rep(0,ndepths),
+      cloud = rep(covdf$cloud,ndepths),
       hdglare = rep(covdf$hdglare,ndepths)
     )
     predf.Near = data.frame(
@@ -56,7 +56,7 @@ makepredf = function(covdf,depths) {
       pos=rep("Near",ndepths),
       secchi = rep(covdf$secchi,ndepths),
       SS = rep(covdf$SS,ndepths),
-      cloud = rep(0,ndepths),
+      cloud = rep(covdf$cloud,ndepths),
       hdglare = rep(covdf$hdglare,ndepths)
     )
     predf.Far = data.frame(
@@ -64,7 +64,7 @@ makepredf = function(covdf,depths) {
       pos=rep("Far",ndepths),
       secchi = rep(covdf$secchi,ndepths),
       SS = rep(covdf$SS,ndepths),
-      cloud = rep(0,ndepths),
+      cloud = rep(covdf$cloud,ndepths),
       hdglare = rep(covdf$hdglare,ndepths)
     )
     return(list(centre=predf.Centre,near=predf.Near,far=predf.Far))
