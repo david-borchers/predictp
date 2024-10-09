@@ -1,3 +1,5 @@
+library(predictp)
+
 # Model without interactions
 # --------------------------
 load("/Users/dlb/git/porpoisevis/inst/fit.hd.sm.rda")
